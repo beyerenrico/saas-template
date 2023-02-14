@@ -27,7 +27,7 @@
 </script>
 
 <svelte:head>
-	<title>Budgetly | Reset password</title>
+	<title>Budgetly | Forgot password?</title>
 </svelte:head>
 
 <Grid class="max-w-xl h-full flex flex-col justify-center">
@@ -45,7 +45,7 @@
 				<InlineNotification title="Error:" subtitle="Please check the form and try again." />
 			{/if}
 			{#if form?.message}
-				<InlineNotification kind="success" title="Error:" subtitle={form?.message} />
+				<InlineNotification kind="success" subtitle={form?.message} />
 			{/if}
 			<form method="POST" use:enhance={submitPasswordReset}>
 				<FormGroup>

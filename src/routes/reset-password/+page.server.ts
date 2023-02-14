@@ -7,14 +7,15 @@ import { dev } from '$app/environment';
 
 import { sendEmail } from '$lib/server/emailjs';
 
+import { LuciaError } from 'lucia-auth';
+
 import type { Actions } from './$types';
 
 export const actions: Actions = {
 	default: async ({ request }) => {
-		try {
-			const { email } = Object.fromEntries(await request.formData()) as Record<string, string>;
+		const { email } = Object.fromEntries(await request.formData()) as Record<string, string>;
 
-			// This example uses MongoDB
+		try {
 			const { user } = await auth.getKeyUser('email', email);
 
 			if (!user) {
@@ -75,8 +76,20 @@ export const actions: Actions = {
 			});
 
 			return { message: 'Password reset email sent' };
-		} catch (error) {
-			console.error(error);
+		} catch (err) {
+			if (err instanceof LuciaError) {
+				return fail(400, {
+					formData: { email },
+					error: true,
+					errors: [
+						{
+							field: 'email',
+							message: err.message
+						}
+					]
+				});
+			}
+
 			return { status: 500, body: { error: 'Internal server error' } };
 		}
 	}
