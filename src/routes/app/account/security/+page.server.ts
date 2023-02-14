@@ -144,6 +144,8 @@ export const actions: Actions = {
 				} catch (err) {
 					console.log(err);
 				}
+			} else {
+				return fail(400, { message: 'Invalid token' });
 			}
 
 			await auth.invalidateAllUserSessions(session.userId);
