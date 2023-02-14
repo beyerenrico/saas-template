@@ -10,6 +10,7 @@
 		PasswordInput
 	} from 'carbon-components-svelte';
 	import type { ActionData, PageData } from './$types';
+	import MobileAppAuthetication from './MobileAppAuthetication.svelte';
 
 	export let form: ActionData;
 	export let data: PageData;
@@ -42,7 +43,7 @@
 		};
 	};
 
-	$: ({ user } = data);
+	$: ({ factor } = data);
 </script>
 
 <svelte:head>
@@ -55,7 +56,7 @@
 	<BreadcrumbItem href="/app/account/security" isCurrentPage>Security</BreadcrumbItem>
 </Breadcrumb>
 
-<h1>Security</h1>
+<h2>Password</h2>
 
 {#if form?.error}
 	<InlineNotification title="Error:" subtitle="Please check the form and try again." />
@@ -63,7 +64,7 @@
 {#if form?.message}
 	<InlineNotification title="Error:" subtitle={form.message} />
 {/if}
-<form method="POST" class="pt-8" use:enhance={submitUpdate}>
+<form action="?/updatePassword" method="POST" class="pt-8" use:enhance={submitUpdate}>
 	<FormGroup>
 		<PasswordInput
 			required
@@ -121,3 +122,7 @@
 	</FormGroup>
 	<Button type="submit" disabled={loading}>Update Password</Button>
 </form>
+
+<hr class="my-12 border-gray-500" />
+
+<MobileAppAuthetication {factor} />

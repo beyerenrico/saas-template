@@ -17,6 +17,7 @@ model User {
   session  Session[]
   Key      Key[]
   PasswordResetToken PasswordResetToken[]
+  Factor   Factor?
 
   @@map("user")
 }
@@ -46,10 +47,23 @@ model Key {
 model PasswordResetToken {
   id        String @id @unique @default(cuid())
   token     String @unique @default(cuid())
-  user_id   String
   expires   DateTime @default(dbgenerated("NOW() + interval '1 day'"))
+  user_id   String
   user      User   @relation(references: [id], fields: [user_id], onDelete: Cascade)
 
   @@index([user_id])
   @@map("password_reset_token")
+}
+
+model Factor {
+  id        String @id @unique @default(cuid())
+  secret    String @unique
+  uri       String
+  qr        String
+  verified  Boolean @default(false)
+  user_id   String @unique
+  user      User   @relation(references: [id], fields: [user_id], onDelete: Cascade)
+
+  @@index([user_id])
+  @@map("factor")
 }
