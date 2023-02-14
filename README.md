@@ -74,7 +74,9 @@ When you want to extend the database schema, you can do so by editing the `prism
 ## Roadmap
 
 - [x] User registration
+- [ ] User email verification
 - [x] User login
+- [x] User logout
 - [x] User password reset
 - [x] Basic Overview Dashboard
 - [ ] Account Settings
