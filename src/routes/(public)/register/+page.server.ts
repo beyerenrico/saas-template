@@ -2,14 +2,14 @@ import { fail, redirect } from '@sveltejs/kit';
 
 import { auth } from '$lib/server/lucia';
 import { schemaRegister } from '$lib/schema';
+import { verifyForm } from '$lib/server/verifyForm';
+import { verifyPublicRoute } from '$lib/server/session';
 
 import type { Actions, PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async ({ locals }) => {
-	const session = await locals.validate();
-	if (session) {
-		throw redirect(302, '/login');
-	}
+	await verifyPublicRoute(locals);
+	throw redirect(302, '/');
 };
 
 export const actions: Actions = {
@@ -18,22 +18,10 @@ export const actions: Actions = {
 			await request.formData()
 		) as Record<string, string>;
 
-		const registerData = schemaRegister.safeParse({ name, email, password, passwordConfirm });
+		const valid = await verifyForm(schemaRegister, { name, email, password, passwordConfirm });
 
-		if (!registerData.success) {
-			// Loop through the errors array and create a custom errors array
-			const errors = registerData.error.errors.map((error) => {
-				return {
-					field: error.path[0],
-					message: error.message
-				};
-			});
-
-			return fail(400, {
-				formData: { name, email, password, passwordConfirm },
-				error: true,
-				errors
-			});
+		if (valid.status !== 200) {
+			return valid as unknown as App.FormFail;
 		}
 
 		try {
@@ -45,11 +33,13 @@ export const actions: Actions = {
 				},
 				attributes: {
 					name,
-					email
+					email,
+					verified: false,
+					created_at: new Date(),
+					updated_at: new Date()
 				}
 			});
 		} catch (err) {
-			console.error(err);
 			return fail(400, { message: 'There is already an account with this email address.' });
 		}
 		throw redirect(302, '/login');

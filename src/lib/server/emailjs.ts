@@ -1,4 +1,13 @@
-import { SMTP_HOST, SMTP_USERNAME, SMTP_PASSWORD, SMTP_PORT, SMTP_FROM } from '$env/static/private';
+import { fail } from '@sveltejs/kit';
+
+import {
+	SMTP_HOST,
+	SMTP_USERNAME,
+	SMTP_PASSWORD,
+	SMTP_PORT,
+	SMTP_FROM,
+	SMTP_SSL
+} from '$env/static/private';
 
 import { Message, SMTPClient } from 'emailjs';
 
@@ -8,7 +17,7 @@ const client = new SMTPClient({
 	password: SMTP_PASSWORD,
 	host: SMTP_HOST,
 	port: parseInt(SMTP_PORT),
-	ssl: false
+	ssl: SMTP_SSL === 'true' ? true : false
 });
 
 // General function to send an email to a single address
@@ -22,15 +31,13 @@ export async function sendEmail({
 	subject: string;
 	text: string;
 	to: string;
-	attachment?: any[];
+	attachment?: App.EmailAttachment[];
 }) {
 	const msg = new Message({
 		text,
 		from: SMTP_FROM,
 		to,
 		subject,
-		// attachment lets us send html
-		// in which case, `text` will be use as a fallback
 		attachment: attachment ?? []
 	});
 
@@ -39,8 +46,7 @@ export async function sendEmail({
 
 	try {
 		await client.sendAsync(msg);
-		console.log('sent');
 	} catch (error) {
-		console.log(error);
+		return fail(500, { message: 'Internal server error' });
 	}
 }

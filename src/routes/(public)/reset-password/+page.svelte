@@ -1,15 +1,6 @@
 <script lang="ts">
 	import { enhance, type SubmitFunction } from '$app/forms';
-	import {
-		TextInput,
-		Grid,
-		Row,
-		Column,
-		Button,
-		FormGroup,
-		InlineNotification,
-		Link
-	} from 'carbon-components-svelte';
+	import { TextInput, Grid, Row, Column, Button, FormGroup, Link } from 'carbon-components-svelte';
 	import type { ActionData } from './$types';
 
 	export let form: ActionData;
@@ -41,12 +32,6 @@
 	</Row>
 	<Row>
 		<Column>
-			{#if form?.error}
-				<InlineNotification title="Error:" subtitle="Please check the form and try again." />
-			{/if}
-			{#if form?.message}
-				<InlineNotification kind="success" subtitle={form?.message} />
-			{/if}
 			<form method="POST" use:enhance={submitPasswordReset}>
 				<FormGroup>
 					<TextInput

@@ -6,13 +6,13 @@ import { prisma } from '$lib/server/prisma';
 
 import twofactor from 'node-2fa';
 
+import { verifyForm } from '$lib/server/verifyForm';
+import { verifyPublicRoute } from '$lib/server/session';
+
 import type { Actions, PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async ({ locals }) => {
-	const session = await locals.validate();
-	if (session) {
-		throw redirect(302, '/');
-	}
+	await verifyPublicRoute(locals);
 };
 
 export const actions: Actions = {
@@ -22,22 +22,10 @@ export const actions: Actions = {
 			string
 		>;
 
-		const loginData = schemaLogin.safeParse({ email, password });
+		const valid = await verifyForm(schemaLogin, { email, password });
 
-		if (!loginData.success) {
-			// Loop through the errors array and create a custom errors array
-			const errors = loginData.error.errors.map((error) => {
-				return {
-					field: error.path[0],
-					message: error.message
-				};
-			});
-
-			return fail(400, {
-				formData: { email, password },
-				error: true,
-				errors
-			});
+		if (valid.status !== 200) {
+			return valid as unknown as App.FormFail;
 		}
 
 		try {
@@ -58,9 +46,9 @@ export const actions: Actions = {
 			const session = await auth.createSession(key.userId);
 			locals.setSession(session);
 		} catch (err) {
-			console.error(err);
 			return fail(400, { message: 'Invalid email or password.' });
 		}
+
 		throw redirect(302, '/app');
 	},
 	verifyFactor: async ({ request, locals }) => {
@@ -73,20 +61,18 @@ export const actions: Actions = {
 			const valid = twofactor.verifyToken(secret, authCode);
 
 			if (valid?.delta === 0) {
-				console.log('Token is valid');
 				try {
 					const session = await auth.createSession(userId);
 					locals.setSession(session);
-
-					console.log('Successfully authenticated via 2FA');
 				} catch (err) {
-					console.log(err);
+					return fail(500, { message: 'Internal server error.' });
 				}
+
 				throw redirect(302, '/app');
 			}
 			return fail(400, { message: 'Invalid authentication code.' });
 		} catch (err) {
-			console.log(err);
+			return fail(500, { message: 'Internal server error.' });
 		}
 	}
 };

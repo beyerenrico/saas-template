@@ -1,12 +1,10 @@
 <script lang="ts">
 	import { enhance, type SubmitFunction } from '$app/forms';
-	import { toast } from '@zerodevx/svelte-toast';
 	import {
 		Breadcrumb,
 		BreadcrumbItem,
 		Button,
 		FormGroup,
-		InlineNotification,
 		TextInput
 	} from 'carbon-components-svelte';
 	import type { ActionData, PageData } from './$types';
@@ -16,25 +14,12 @@
 
 	let loading = false;
 
-	const submitUpdate: SubmitFunction = () => {
+	const submitForm: SubmitFunction = () => {
 		loading = true;
 
-		return async ({ result, update }) => {
-			switch (result.type) {
-				case 'success':
-					toast.push('Profile updated.');
-					break;
-				case 'error':
-					toast.push('There was an error updating your profile.');
-					break;
-				case 'failure':
-					update();
-					break;
-				default:
-					break;
-			}
-
+		return async ({ update }) => {
 			loading = false;
+			update();
 		};
 	};
 
@@ -53,13 +38,7 @@
 
 <h1>Profile</h1>
 
-{#if form?.error}
-	<InlineNotification title="Error:" subtitle="Please check the form and try again." />
-{/if}
-{#if form?.message}
-	<InlineNotification title="Error:" subtitle={form.message} />
-{/if}
-<form method="POST" class="pt-8" use:enhance={submitUpdate}>
+<form method="POST" class="pt-8" use:enhance={submitForm}>
 	<FormGroup>
 		<TextInput
 			disabled={loading}

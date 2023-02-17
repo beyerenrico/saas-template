@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { toast } from '@zerodevx/svelte-toast';
 	import { enhance, type SubmitFunction } from '$app/forms';
 	import {
 		TextInput,
@@ -9,63 +8,24 @@
 		Column,
 		Button,
 		FormGroup,
-		InlineNotification,
 		Link
 	} from 'carbon-components-svelte';
 	import type { ActionData } from './$types';
 
-	type Factor = {
-		id: string;
-		qr: string;
-		secret: string;
-		uri: string;
-		user_id: string;
-		verified: string;
-	};
-
 	export let form: ActionData;
 
-	let factor: Factor;
+	let factor: App.Factor;
 	let loading = false;
 
 	const submitLogin: SubmitFunction = () => {
 		loading = true;
 
 		return async ({ result, update }) => {
-			switch (result.type) {
-				case 'success':
-					factor = result.data?.factor;
-					break;
-				default:
-					break;
+			if (result.type === 'success') {
+				factor = result.data?.factor as App.Factor;
 			}
-
-			update();
 			loading = false;
-		};
-	};
-
-	const submitVerification: SubmitFunction = () => {
-		loading = true;
-
-		return async ({ result, update }) => {
-			switch (result.type) {
-				case 'success':
-					toast.push('Login successful', {
-						duration: 3000
-					});
-					break;
-				case 'error':
-					toast.push('Login failed', {
-						duration: 3000
-					});
-					break;
-				default:
-					break;
-			}
-
 			update();
-			loading = false;
 		};
 	};
 </script>
@@ -85,15 +45,9 @@
 	</Row>
 	<Row>
 		<Column>
-			{#if form?.error}
-				<InlineNotification title="Error:" subtitle="Please check the form and try again." />
-			{/if}
-			{#if form?.message}
-				<InlineNotification title="Error:" subtitle={form?.message} />
-			{/if}
 			{#if factor}
 				<p class="mb-4">Please authenticate to proceed with your login</p>
-				<form action="?/verifyFactor" method="POST" use:enhance={submitVerification}>
+				<form action="?/verifyFactor" method="POST" use:enhance>
 					<FormGroup>
 						<TextInput
 							type="text"

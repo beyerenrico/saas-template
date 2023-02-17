@@ -1,12 +1,10 @@
 <script lang="ts">
 	import { enhance, type SubmitFunction } from '$app/forms';
-	import { toast } from '@zerodevx/svelte-toast';
 	import {
 		Breadcrumb,
 		BreadcrumbItem,
 		Button,
 		FormGroup,
-		InlineNotification,
 		PasswordInput
 	} from 'carbon-components-svelte';
 	import type { ActionData, PageData } from './$types';
@@ -21,25 +19,8 @@
 		loading = true;
 
 		return async ({ result, update }) => {
-			switch (result.type) {
-				case 'success':
-				case 'redirect':
-					toast.push('Password updated. Please log in with your new credentials.', {
-						duration: 20000
-					});
-					update();
-					break;
-				case 'error':
-					toast.push('There was an error updating your password.');
-					break;
-				case 'failure':
-					update();
-					break;
-				default:
-					break;
-			}
-
 			loading = false;
+			update();
 		};
 	};
 
@@ -58,12 +39,6 @@
 
 <h2>Password</h2>
 
-{#if form?.error}
-	<InlineNotification title="Error:" subtitle="Please check the form and try again." />
-{/if}
-{#if form?.message}
-	<InlineNotification title="Error:" subtitle={form.message} />
-{/if}
 <form action="?/updatePassword" method="POST" class="pt-8" use:enhance={submitUpdate}>
 	<FormGroup>
 		<PasswordInput

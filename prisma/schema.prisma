@@ -11,13 +11,16 @@ datasource db {
 }
 
 model User {
-  id       String    @id @unique
-  name     String
-  email    String    @unique
-  session  Session[]
-  Key      Key[]
-  PasswordResetToken PasswordResetToken[]
-  Factor   Factor?
+  id                  String                @id @unique
+  name                String
+  email               String                @unique
+  session             Session[]
+  Key                 Key[]
+  Factor              Factor?
+  PasswordResetToken  PasswordResetToken[]
+  verified            Boolean               @default(false)
+  created_at          DateTime              @default(dbgenerated("NOW()"))
+  updated_at          DateTime              @default(dbgenerated("NOW()"))
 
   @@map("user")
 }
@@ -34,35 +37,37 @@ model Session {
 }
 
 model Key {
-  id              String  @id @unique
+  id              String    @id @unique
   hashed_password String?
   user_id         String
   primary         Boolean
-  user            User    @relation(references: [id], fields: [user_id], onDelete: Cascade)
+  user            User      @relation(references: [id], fields: [user_id], onDelete: Cascade)
+  created_at      DateTime  @default(dbgenerated("NOW()"))
+  updated_at      DateTime  @default(dbgenerated("NOW()"))
 
   @@index([user_id])
   @@map("key")
 }
 
 model PasswordResetToken {
-  id        String @id @unique @default(cuid())
-  token     String @unique @default(cuid())
-  expires   DateTime @default(dbgenerated("NOW() + interval '1 day'"))
+  id        String    @id @unique @default(cuid())
+  token     String    @unique @default(cuid())
+  expires   DateTime  @default(dbgenerated("NOW() + interval '1 day'"))
   user_id   String
-  user      User   @relation(references: [id], fields: [user_id], onDelete: Cascade)
+  user      User      @relation(references: [id], fields: [user_id], onDelete: Cascade)
 
   @@index([user_id])
   @@map("password_reset_token")
 }
 
 model Factor {
-  id        String @id @unique @default(cuid())
-  secret    String @unique
+  id        String  @id @unique @default(cuid())
+  secret    String  @unique
   uri       String
   qr        String
   verified  Boolean @default(false)
-  user_id   String @unique
-  user      User   @relation(references: [id], fields: [user_id], onDelete: Cascade)
+  user_id   String  @unique
+  user      User    @relation(references: [id], fields: [user_id], onDelete: Cascade)
 
   @@index([user_id])
   @@map("factor")

@@ -9,6 +9,8 @@ import { sendEmail } from '$lib/server/emailjs';
 
 import { LuciaError } from 'lucia-auth';
 
+import { APP_URL } from '$env/static/private';
+
 import type { Actions } from './$types';
 
 export const actions: Actions = {
@@ -47,7 +49,9 @@ export const actions: Actions = {
 				// Each token has an expiry date.
 				// If the token is expired, delete it and make a new one
 				await prisma.passwordResetToken.delete({
-					where: { token }
+					where: {
+						id: token.id
+					}
 				});
 
 				token = await prisma.passwordResetToken.create({
@@ -59,9 +63,7 @@ export const actions: Actions = {
 
 			// The page the user will be directed to from their email
 			// We send the resetToken, and the user_id along
-			const link = `${dev ? 'localhost:5173/' : '<Your-Site>.com/'}reset-password/${user_id}/${
-				token.token
-			}`;
+			const link = `${APP_URL}/reset-password/${user_id}/${token.token}`;
 
 			await sendEmail({
 				subject: 'Password Reset',
@@ -75,7 +77,10 @@ export const actions: Actions = {
 				]
 			});
 
-			return { message: 'Password reset email sent' };
+			return {
+				type: 'success',
+				message: `We have sent an email to ${email}. Please follow the instructions in the email to reset your password.`
+			};
 		} catch (err) {
 			if (err instanceof LuciaError) {
 				return fail(400, {
@@ -90,7 +95,9 @@ export const actions: Actions = {
 				});
 			}
 
-			return { status: 500, body: { error: 'Internal server error' } };
+			return fail(500, {
+				message: 'Internal server error'
+			});
 		}
 	}
 };

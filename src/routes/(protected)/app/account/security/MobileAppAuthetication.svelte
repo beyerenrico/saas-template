@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { enhance, type SubmitFunction } from '$app/forms';
-	import { toast } from '@zerodevx/svelte-toast';
 	import {
 		Button,
 		CopyButton,
@@ -12,67 +11,32 @@
 		TextInput
 	} from 'carbon-components-svelte';
 
-	type Factor = {
-		id: string;
-		qr: string;
-		secret: string;
-		uri: string;
-		user_id: string;
-		verified: string;
-	};
-
-	export let factor: Factor;
+	export let factor: App.Factor;
 
 	let open = false;
 	let loading = false;
-	let newFactor: Factor;
+	let newFactor: App.Factor;
 
 	const submitCreateFactor: SubmitFunction = () => {
 		loading = true;
 
 		return async ({ result, update }) => {
-			switch (result.type) {
-				case 'success':
-					open = true;
-					newFactor = result.data as typeof newFactor;
-					break;
-				case 'error':
-					break;
-				case 'failure':
-					break;
-				default:
-					break;
+			if (result.type === 'success') {
+				open = true;
+				newFactor = result.data as typeof newFactor;
 			}
 
-			update();
-
 			loading = false;
+			update();
 		};
 	};
 
 	const submitVerifyFactor: SubmitFunction = () => {
 		loading = true;
 
-		return async ({ result, update }) => {
-			switch (result.type) {
-				case 'success':
-					open = false;
-
-					toast.push('Two-factor authentication has been enabled. You will be logged out.', {
-						duration: 20000
-					});
-					break;
-				case 'error':
-					break;
-				case 'failure':
-					break;
-				default:
-					break;
-			}
-
-			update();
-
+		return async ({ update }) => {
 			loading = false;
+			update();
 		};
 	};
 
@@ -80,25 +44,12 @@
 		loading = true;
 
 		return async ({ result, update }) => {
-			switch (result.type) {
-				case 'success':
-					open = false;
-
-					toast.push('Two-factor authentication has been removed. You will be logged out.', {
-						duration: 20000
-					});
-					break;
-				case 'error':
-					break;
-				case 'failure':
-					break;
-				default:
-					break;
+			if (result.type === 'success') {
+				open = false;
 			}
 
-			update();
-
 			loading = false;
+			update();
 		};
 	};
 </script>

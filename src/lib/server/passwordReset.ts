@@ -1,3 +1,5 @@
+import { fail } from '@sveltejs/kit';
+
 import { prisma } from './prisma';
 
 /**
@@ -5,17 +7,19 @@ import { prisma } from './prisma';
  *
  * Will delete an expired token without creating a new one
  */
-export const canResetPassword = async (params: { user_id: string; token: string }) => {
-	const resetToken = await prisma.passwordResetToken.findUnique({
+export const canResetPassword = async ({
+	params
+}: {
+	params: { user_id: string; token: string };
+}) => {
+	const resetToken: Database.PasswordResetToken = await prisma.passwordResetToken.findUnique({
 		where: { token: params.token }
 	});
 
-	// Returns a RequestHandlerOutput to use in the password-reset endpoint
 	if (!resetToken) {
-		return {
-			status: 400,
-			body: { error: 'Invalid token or user_id', ok: false }
-		};
+		return fail(400, {
+			message: 'Invalid token or user_id'
+		});
 	}
 
 	if (resetToken.expires < new Date()) {
@@ -23,11 +27,16 @@ export const canResetPassword = async (params: { user_id: string; token: string 
 			where: { token: params.token }
 		});
 
-		return {
-			status: 400,
-			body: { error: 'Token expired. Please reset your password again', ok: false }
-		};
+		return fail(400, {
+			message: 'Token expired. Please reset your password again'
+		});
 	}
 
-	return { body: { message: 'Token valid', ok: true, resetToken } };
+	return {
+		status: 200,
+		data: {
+			message: 'Token valid',
+			resetToken
+		}
+	};
 };

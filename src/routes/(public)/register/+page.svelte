@@ -8,7 +8,6 @@
 		Column,
 		Button,
 		FormGroup,
-		InlineNotification,
 		Link
 	} from 'carbon-components-svelte';
 	import type { ActionData } from './$types';
@@ -30,12 +29,6 @@
 	</Row>
 	<Row>
 		<Column>
-			{#if form?.error}
-				<InlineNotification title="Error:" subtitle="Please check the form and try again." />
-			{/if}
-			{#if form?.message}
-				<InlineNotification title="Error:" subtitle={form.message} />
-			{/if}
 			<form method="POST" use:enhance>
 				<FormGroup>
 					<TextInput
