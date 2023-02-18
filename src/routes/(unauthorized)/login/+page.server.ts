@@ -7,13 +7,8 @@ import { prisma } from '$lib/server/prisma';
 import twofactor from 'node-2fa';
 
 import { verifyForm } from '$lib/server/verifyForm';
-import { verifyPublicRoute } from '$lib/server/session';
 
-import type { Actions, PageServerLoad } from './$types';
-
-export const load: PageServerLoad = async ({ locals }) => {
-	await verifyPublicRoute(locals);
-};
+import type { Actions } from './$types';
 
 export const actions: Actions = {
 	login: async ({ request, locals }) => {
@@ -67,12 +62,13 @@ export const actions: Actions = {
 				} catch (err) {
 					return fail(500, { message: 'Internal server error.' });
 				}
-
-				throw redirect(302, '/app');
+			} else {
+				return fail(400, { message: 'Invalid authentication code.' });
 			}
-			return fail(400, { message: 'Invalid authentication code.' });
 		} catch (err) {
 			return fail(500, { message: 'Internal server error.' });
 		}
+
+		throw redirect(302, '/app');
 	}
 };

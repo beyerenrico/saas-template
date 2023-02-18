@@ -1,5 +1,7 @@
 <script lang="ts">
 	import { enhance, type SubmitFunction } from '$app/forms';
+	import { PUBLIC_APP_NAME } from '$env/static/public';
+	import { toast } from '$lib/notification';
 	import {
 		TextInput,
 		PasswordInput,
@@ -21,17 +23,43 @@
 		loading = true;
 
 		return async ({ result, update }) => {
-			if (result.type === 'success') {
-				factor = result.data?.factor as App.Factor;
+			switch (result.type) {
+				case 'success':
+					factor = result.data?.factor as App.Factor;
+					update();
+					break;
+				case 'redirect':
+					toast({
+						kind: 'success',
+						title: 'Successful login',
+						caption: new Date().toLocaleString()
+					});
+					update();
+					break;
+				case 'failure':
+					toast({
+						kind: 'error',
+						title: 'Login failed',
+						caption: result.data?.message
+					});
+					break;
 			}
 			loading = false;
-			update();
+		};
+	};
+
+	const submitVerification: SubmitFunction = () => {
+		loading = true;
+
+		return async ({ result, update }) => {
+			console.log(result);
+			loading = false;
 		};
 	};
 </script>
 
 <svelte:head>
-	<title>Budgetly | Login</title>
+	<title>{PUBLIC_APP_NAME} | Login</title>
 </svelte:head>
 
 <Grid class="max-w-xl h-full flex flex-col justify-center">
@@ -47,7 +75,7 @@
 		<Column>
 			{#if factor}
 				<p class="mb-4">Please authenticate to proceed with your login</p>
-				<form action="?/verifyFactor" method="POST" use:enhance>
+				<form action="?/verifyFactor" method="POST" use:enhance={submitLogin}>
 					<FormGroup>
 						<TextInput
 							type="text"

@@ -3,14 +3,8 @@ import { fail, redirect } from '@sveltejs/kit';
 import { auth } from '$lib/server/lucia';
 import { schemaRegister } from '$lib/schema';
 import { verifyForm } from '$lib/server/verifyForm';
-import { verifyPublicRoute } from '$lib/server/session';
 
-import type { Actions, PageServerLoad } from './$types';
-
-export const load: PageServerLoad = async ({ locals }) => {
-	await verifyPublicRoute(locals);
-	throw redirect(302, '/');
-};
+import type { Actions } from './$types';
 
 export const actions: Actions = {
 	default: async ({ request }) => {

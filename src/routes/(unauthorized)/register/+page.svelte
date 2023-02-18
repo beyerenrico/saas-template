@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
+	import { PUBLIC_APP_NAME } from '$env/static/public';
 	import {
 		TextInput,
 		PasswordInput,
@@ -16,7 +17,7 @@
 </script>
 
 <svelte:head>
-	<title>Budgetly | Register</title>
+	<title>{PUBLIC_APP_NAME} | Register</title>
 </svelte:head>
 <Grid class="max-w-xl h-full flex flex-col justify-center">
 	<Row>
