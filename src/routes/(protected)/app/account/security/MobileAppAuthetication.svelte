@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { enhance, type SubmitFunction } from '$app/forms';
+	import { toast } from '$lib/notification';
 	import {
 		Button,
 		CopyButton,
@@ -34,7 +35,28 @@
 	const submitVerifyFactor: SubmitFunction = () => {
 		loading = true;
 
-		return async ({ update }) => {
+		return async ({ result, update }) => {
+			switch (result.type) {
+				case 'redirect':
+					toast({
+						kind: 'success',
+						title: 'Two-factor authentication has been enabled',
+						subtitle: 'You have been logged out on all devices',
+						caption: new Date().toLocaleString()
+					});
+					break;
+				case 'failure':
+					toast({
+						kind: 'error',
+						title: 'Invalid token',
+						subtitle: 'Please try again',
+						caption: new Date().toLocaleString()
+					});
+					break;
+				default:
+					break;
+			}
+
 			loading = false;
 			update();
 		};
@@ -46,6 +68,13 @@
 		return async ({ result, update }) => {
 			if (result.type === 'success') {
 				open = false;
+
+				toast({
+					kind: 'success',
+					title: 'Two-factor authentication has been disabled',
+					subtitle: 'You have been logged out on all devices',
+					caption: new Date().toLocaleString()
+				});
 			}
 
 			loading = false;

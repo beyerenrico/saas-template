@@ -38,6 +38,13 @@ declare global {
 			data: string;
 			alternative: boolean;
 		};
+
+		type Notification = {
+			title: string;
+			subtitle?: string;
+			caption?: string;
+			kind?: 'success' | 'error' | 'warning' | 'info';
+		};
 	}
 
 	let __prisma: PrismaClient;
@@ -100,6 +107,7 @@ declare global {
 			user_id: string;
 			user: User;
 		};
+
 		type Factor = {
 			id: string;
 			secret: string;
