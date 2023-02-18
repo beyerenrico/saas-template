@@ -1,9 +1,9 @@
 <script>
-	import { Breadcrumb, BreadcrumbItem } from 'carbon-components-svelte';
+	import { PUBLIC_APP_NAME } from '$env/static/public';
 </script>
 
 <svelte:head>
-	<title>Budgetly | Account</title>
+	<title>{PUBLIC_APP_NAME} | Account</title>
 </svelte:head>
 
 <Breadcrumb noTrailingSlash class="mb-4">

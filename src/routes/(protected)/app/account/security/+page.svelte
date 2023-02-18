@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { enhance, type SubmitFunction } from '$app/forms';
+	import { PUBLIC_APP_NAME } from '$env/static/public';
 	import {
 		Breadcrumb,
 		BreadcrumbItem,
@@ -28,7 +28,7 @@
 </script>
 
 <svelte:head>
-	<title>Budgetly | Account | Security</title>
+	<title>{PUBLIC_APP_NAME} | Account | Security</title>
 </svelte:head>
 
 <Breadcrumb noTrailingSlash class="mb-4">

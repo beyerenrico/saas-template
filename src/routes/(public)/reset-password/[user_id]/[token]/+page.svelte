@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { enhance, type SubmitFunction } from '$app/forms';
+	import { PUBLIC_APP_NAME } from '$env/static/public';
 	import { PasswordInput, Grid, Row, Column, Button, FormGroup } from 'carbon-components-svelte';
 	import type { ActionData } from './$types';
 
@@ -18,7 +19,7 @@
 </script>
 
 <svelte:head>
-	<title>Budgetly | Create a new password</title>
+	<title>{PUBLIC_APP_NAME} | Create a new password</title>
 </svelte:head>
 
 <Grid class="max-w-xl h-full flex flex-col justify-center">
