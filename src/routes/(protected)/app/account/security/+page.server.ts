@@ -1,9 +1,8 @@
-import { redirect, type Actions } from '@sveltejs/kit';
+import { fail, redirect, type Actions } from '@sveltejs/kit';
 
 import { schemaPassword } from '$lib/schema';
 import { auth } from '$lib/server/lucia';
 import { prisma } from '$lib/server/prisma';
-import { verifyProtectedRoute } from '$lib/server/session';
 import { verifyForm } from '$lib/server/verifyForm';
 import { createFactor, deleteFactor, updateFactor } from '$lib/server/controllers/factor';
 import { updatePassword, validatePassword } from '$lib/server/controllers/password';
@@ -11,7 +10,11 @@ import { updatePassword, validatePassword } from '$lib/server/controllers/passwo
 import type { PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async ({ locals }) => {
-	const session = await verifyProtectedRoute(locals);
+	const session = await locals.validate();
+
+	if (!session) {
+		throw redirect(302, '/login');
+	}
 
 	return {
 		user: await auth.getUser(session.userId),
@@ -23,7 +26,11 @@ export const load: PageServerLoad = async ({ locals }) => {
 
 export const actions: Actions = {
 	updatePassword: async ({ request, locals }) => {
-		const session = await verifyProtectedRoute(locals);
+		const session = await locals.validate();
+
+		if (!session) {
+			throw redirect(302, '/login');
+		}
 
 		const user = await auth.getUser(session.userId);
 
@@ -40,26 +47,55 @@ export const actions: Actions = {
 		await validatePassword(user.email, oldPassword);
 		await updatePassword(user.email, password);
 		await auth.invalidateAllUserSessions(session.userId);
+		locals.setSession(null);
 
-		throw redirect(302, '/login');
+		throw redirect(302, '/login?passwordChanged=success');
 	},
 	createFactor: async ({ locals }) => {
-		const session = await verifyProtectedRoute(locals);
+		const session = await locals.validate();
+
+		if (!session) {
+			throw redirect(302, '/login');
+		}
+
 		const factor = await createFactor(session);
 
 		return factor as Database.Factor;
 	},
 	verifyFactor: async ({ request, locals }) => {
+		const session = await locals.validate();
+
+		if (!session) {
+			throw redirect(302, '/login');
+		}
+
 		const { authCode, secret } = Object.fromEntries(await request.formData()) as Record<
 			string,
 			string
 		>;
 
-		const session = await verifyProtectedRoute(locals);
-		await updateFactor(secret, authCode, session, locals);
+		const valid = await updateFactor(secret, authCode, session, locals);
+
+		if (valid.status === 400) {
+			return fail(400, { message: valid.data.message });
+		}
+
+		console.log(valid);
+
+		return {
+			status: 200,
+			data: {
+				message: valid.data.message
+			}
+		};
 	},
 	deleteFactor: async ({ locals }) => {
-		const session = await verifyProtectedRoute(locals);
-		await deleteFactor(locals, session);
+		const session = await locals.validate();
+
+		if (!session) {
+			throw redirect(302, '/login');
+		}
+
+		return await deleteFactor(locals, session);
 	}
 };

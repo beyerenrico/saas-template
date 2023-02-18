@@ -5,14 +5,17 @@ import { auth } from '$lib/server/lucia';
 
 import { LuciaError } from 'lucia-auth';
 
-import { verifyProtectedRoute } from '$lib/server/session';
 import { verifyForm } from '$lib/server/verifyForm';
 import { updateKeyIdentifier } from '$lib/server/controllers/key';
 
 import type { PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async ({ locals }) => {
-	const session = await verifyProtectedRoute(locals);
+	const session = await locals.validate();
+
+	if (!session) {
+		throw redirect(302, '/login');
+	}
 
 	return {
 		user: await auth.getUser(session.userId)
@@ -22,7 +25,11 @@ export const load: PageServerLoad = async ({ locals }) => {
 export const actions: Actions = {
 	default: async ({ request, locals }) => {
 		let response: { status: number } | undefined;
-		const session = await verifyProtectedRoute(locals);
+		const session = await locals.validate();
+
+		if (!session) {
+			throw redirect(302, '/login');
+		}
 
 		const { name, email } = Object.fromEntries(await request.formData()) as Record<string, string>;
 
