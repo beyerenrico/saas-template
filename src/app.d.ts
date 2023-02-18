@@ -93,6 +93,13 @@ declare global {
 			user: User;
 		};
 
+		type EmailVerifyToken = {
+			id: string;
+			token: string;
+			expires: Date;
+			user_id: string;
+			user: User;
+		};
 		type Factor = {
 			id: string;
 			secret: string;

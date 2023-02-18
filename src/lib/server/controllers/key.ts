@@ -1,5 +1,6 @@
 import { fail } from '@sveltejs/kit';
 
+import { auth } from '../lucia';
 import { prisma } from '../prisma';
 import { invalidateSession } from '../session';
 
@@ -27,6 +28,11 @@ export const updateKeyIdentifier = async (
 				id: `${providerId}:${providerValue}`,
 				updated_at: new Date()
 			}
+		});
+
+		await auth.updateUserAttributes(userId, {
+			verified: false,
+			updated_at: new Date()
 		});
 
 		return await invalidateSession(locals);

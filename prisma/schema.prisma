@@ -18,6 +18,7 @@ model User {
   Key                 Key[]
   Factor              Factor?
   PasswordResetToken  PasswordResetToken[]
+  EmailVerifyToken    EmailVerifyToken[]
   verified            Boolean               @default(false)
   created_at          DateTime              @default(dbgenerated("NOW()"))
   updated_at          DateTime              @default(dbgenerated("NOW()"))
@@ -58,6 +59,17 @@ model PasswordResetToken {
 
   @@index([user_id])
   @@map("password_reset_token")
+}
+
+model EmailVerifyToken {
+  id        String    @id @unique @default(cuid())
+  token     String    @unique @default(cuid())
+  expires   DateTime  @default(dbgenerated("NOW() + interval '15 minutes'"))
+  user_id   String
+  user      User      @relation(references: [id], fields: [user_id], onDelete: Cascade)
+
+  @@index([user_id])
+  @@map("email_verify_token")
 }
 
 model Factor {

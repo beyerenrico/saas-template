@@ -1,5 +1,7 @@
 <script lang="ts">
-	import { enhance, type SubmitFunction } from '$app/forms';
+	import { enhance } from '$app/forms';
+	import { PUBLIC_APP_NAME } from '$env/static/public';
+	import { noClearEnhanceFunction } from '$lib/utils';
 	import {
 		Breadcrumb,
 		BreadcrumbItem,
@@ -12,22 +14,11 @@
 	export let form: ActionData;
 	export let data: PageData;
 
-	let loading = false;
-
-	const submitForm: SubmitFunction = () => {
-		loading = true;
-
-		return async ({ update }) => {
-			loading = false;
-			update();
-		};
-	};
-
 	$: ({ user } = data);
 </script>
 
 <svelte:head>
-	<title>Budgetly | Account | Profile</title>
+	<title>{PUBLIC_APP_NAME} | Account | Profile</title>
 </svelte:head>
 
 <Breadcrumb noTrailingSlash class="mb-4">
@@ -38,10 +29,9 @@
 
 <h1>Profile</h1>
 
-<form method="POST" class="pt-8" use:enhance={submitForm}>
+<form method="POST" class="pt-8" use:enhance={noClearEnhanceFunction}>
 	<FormGroup>
 		<TextInput
-			disabled={loading}
 			type="text"
 			labelText="Name"
 			placeholder="Enter name..."
@@ -60,7 +50,6 @@
 	</FormGroup>
 	<FormGroup>
 		<TextInput
-			disabled={loading}
 			type="email"
 			labelText="Email"
 			placeholder="Enter email..."
@@ -68,6 +57,8 @@
 			id="email"
 			name="email"
 			value={user?.email}
+			warn={user?.verified ? false : true}
+			warnText="Your email is not verified yet"
 			invalidText={form?.error
 				? form?.errors
 						?.filter((e) => e.field === 'email')
@@ -81,5 +72,5 @@
 				: false}
 		/>
 	</FormGroup>
-	<Button type="submit" disabled={loading}>Update Profile</Button>
+	<Button type="submit">Update Profile</Button>
 </form>
