@@ -1,5 +1,7 @@
 <script lang="ts">
+	import { enhance } from '$app/forms';
 	import { PUBLIC_APP_NAME } from '$env/static/public';
+	import { defaultEnhanceFunction } from '$lib/utils';
 	import {
 		Breadcrumb,
 		BreadcrumbItem,
@@ -12,17 +14,6 @@
 
 	export let form: ActionData;
 	export let data: PageData;
-
-	let loading = false;
-
-	const submitUpdate: SubmitFunction = () => {
-		loading = true;
-
-		return async ({ result, update }) => {
-			loading = false;
-			update();
-		};
-	};
 
 	$: ({ factor } = data);
 </script>
@@ -39,7 +30,7 @@
 
 <h2>Password</h2>
 
-<form action="?/updatePassword" method="POST" class="pt-8" use:enhance={submitUpdate}>
+<form action="?/updatePassword" method="POST" class="pt-8" use:enhance={defaultEnhanceFunction}>
 	<FormGroup>
 		<PasswordInput
 			required
@@ -95,7 +86,7 @@
 				: false}
 		/>
 	</FormGroup>
-	<Button type="submit" disabled={loading}>Update Password</Button>
+	<Button type="submit">Update Password</Button>
 </form>
 
 <hr class="my-12 border-gray-500" />
