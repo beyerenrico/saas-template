@@ -71,7 +71,7 @@ When you want to extend the database schema, you can do so by editing the `prism
   npx prisma generate
 ```
 
-## Roadmap
+## Roadmap to v1.0.0
 
 - [x] User registration
 - [x] User email verification
@@ -79,9 +79,15 @@ When you want to extend the database schema, you can do so by editing the `prism
 - [x] User logout
 - [x] User password reset
 - [x] Two-factor authentication
+- [ ] OAuth2 Login
 - [x] Basic Overview Dashboard
 - [x] Global system for toasts and notifications
 - [x] Account Settings
   - [x] Profile page to edit name and email
   - [x] Security page to edit password
-  - [x] Settings for theme, language and accessibility
+  - [ ] Settings
+    - [x] Theme
+    - [ ] Language
+    - [ ] Accessibility
+      - [x] Font size
+      - ...
