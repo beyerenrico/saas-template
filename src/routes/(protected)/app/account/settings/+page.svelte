@@ -12,6 +12,44 @@
 	let themeValue: CarbonTheme;
 	let globalFontSizeValue: string;
 
+	const themes = [
+		{
+			label: 'White',
+			value: 'white'
+		},
+		{
+			label: 'Gray (10)',
+			value: 'g10'
+		},
+		{
+			label: 'Gray (80)',
+			value: 'g80'
+		},
+		{
+			label: 'Gray (90)',
+			value: 'g90'
+		},
+		{
+			label: 'Gray (100)',
+			value: 'g100'
+		}
+	];
+
+	const fontSizes = [
+		{
+			label: 'Small',
+			value: '16'
+		},
+		{
+			label: 'Medium',
+			value: '18'
+		},
+		{
+			label: 'Large',
+			value: '20'
+		}
+	];
+
 	theme.subscribe((value) => {
 		themeValue = value;
 	});
@@ -37,13 +75,13 @@
 <h1>Settings</h1>
 
 <RadioButtonGroup legendText="Color Theme" bind:selected={themeValue} class="mt-8">
-	{#each ['white', 'g10', 'g80', 'g90', 'g100'] as value}
-		<RadioButton labelText={value} {value} />
+	{#each themes as { label, value }}
+		<RadioButton labelText={label} {value} />
 	{/each}
 </RadioButtonGroup>
 
 <RadioButtonGroup legendText="Font Size" bind:selected={globalFontSizeValue} class="mt-8">
-	{#each ['16', '18', '20', '24', '30'] as value}
-		<RadioButton labelText="{value}px" {value} />
+	{#each fontSizes as { label, value }}
+		<RadioButton labelText={label} {value} />
 	{/each}
 </RadioButtonGroup>
