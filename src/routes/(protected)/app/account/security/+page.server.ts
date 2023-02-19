@@ -77,6 +77,8 @@ export const actions: Actions = {
 			throw redirect(302, '/login');
 		}
 
+		const user = await auth.getUser(session.userId);
+
 		const { authCode, secret } = Object.fromEntries(await request.formData()) as Record<
 			string,
 			string
@@ -87,6 +89,12 @@ export const actions: Actions = {
 		if (valid.status === 400) {
 			return fail(400, { message: valid.data.message });
 		}
+
+		await sendEmail({
+			subject: 'Two-factor authentication enabled',
+			text: `Hi ${user.name},\n\nTwo-Factor Authentication has been enabled for you account.\n\nIf you did not request this change, please contact us immediately`,
+			to: user.email
+		});
 
 		return {
 			status: 200,

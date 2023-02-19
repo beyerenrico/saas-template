@@ -4,6 +4,7 @@ import type { Session } from 'lucia-auth';
 
 import twofactor from 'node-2fa';
 
+import { sendEmail } from '../emailjs';
 import { auth } from '../lucia';
 import { prisma } from '../prisma';
 
@@ -81,9 +82,16 @@ export const updateFactor = async (
 export const deleteFactor = async (locals: App.Locals, session: Session) => {
 	try {
 		const user_id = session.userId;
+		const user = await auth.getUser(user_id);
 
 		await prisma.factor.delete({
 			where: { user_id }
+		});
+
+		await sendEmail({
+			subject: 'Two-factor authentication disabled',
+			text: `Hi ${user.name},\n\nTwo-Factor Authentication has been disabled for you account.\n\nIf you did not request this change, please contact us immediately`,
+			to: user.email
 		});
 
 		await auth.invalidateAllUserSessions(session.userId);
