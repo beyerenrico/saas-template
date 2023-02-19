@@ -5,7 +5,7 @@ import { canResetPassword } from '$lib/server/passwordReset';
 import { prisma } from '$lib/server/prisma';
 import { schemaForgotPassword } from '$lib/schema';
 import { verifyForm } from '$lib/server/verifyForm';
-import { sendMailgunEmail } from '$lib/server/mailgunjs';
+import { sendEmail } from '$lib/server/emailjs';
 
 import type { PageServerLoad } from './$types';
 
@@ -69,14 +69,10 @@ export const actions: Actions = {
 				});
 			}
 
-			await sendMailgunEmail({
+			await sendEmail({
 				subject: 'Password changed',
-				to: primaryKey.providerUserId,
-				template: 'password_changed',
-				variables: {
-					name: user.name,
-					support_email: 'support@acmecompany.com'
-				}
+				text: `Hi ${user.name},\n\nYour password has been changed.\n\nIf you did not change your email, please contact us immediately`,
+				to: user.email
 			});
 
 			return {

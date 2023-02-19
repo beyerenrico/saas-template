@@ -7,7 +7,7 @@ import { LuciaError } from 'lucia-auth';
 
 import { verifyForm } from '$lib/server/verifyForm';
 import { updateKeyIdentifier } from '$lib/server/controllers/key';
-import { sendMailgunEmail } from '$lib/server/mailgunjs';
+import { sendEmail } from '$lib/server/emailjs';
 
 import type { PageServerLoad } from './$types';
 
@@ -63,14 +63,10 @@ export const actions: Actions = {
 		}
 
 		if (response?.status === 200) {
-			await sendMailgunEmail({
+			await sendEmail({
 				subject: 'Email changed',
-				to: user.email,
-				template: 'email_changed',
-				variables: {
-					name: user.name,
-					support_email: 'support@acmecompany.com'
-				}
+				text: `Hi ${user.name},\n\nYour email has been changed to ${email}.\n\nIf you did not change your email, please contact us immediately`,
+				to: user.email
 			});
 
 			throw redirect(302, '/login?emailChanged=success');

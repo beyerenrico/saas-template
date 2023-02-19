@@ -6,7 +6,7 @@ import { prisma } from '$lib/server/prisma';
 import { verifyForm } from '$lib/server/verifyForm';
 import { createFactor, deleteFactor, updateFactor } from '$lib/server/controllers/factor';
 import { updatePassword, validatePassword } from '$lib/server/controllers/password';
-import { sendMailgunEmail } from '$lib/server/mailgunjs';
+import { sendEmail } from '$lib/server/emailjs';
 
 import type { PageServerLoad } from './$types';
 
@@ -48,14 +48,10 @@ export const actions: Actions = {
 		await validatePassword(user.email, oldPassword);
 		await updatePassword(user.email, password);
 
-		await sendMailgunEmail({
+		await sendEmail({
 			subject: 'Password changed',
-			to: user.email,
-			template: 'password_changed',
-			variables: {
-				name: user.name,
-				support_email: 'support@acmecompany.com'
-			}
+			text: `Hi ${user.name},\n\nYour password has been changed.\n\nIf you did not change your email, please contact us immediately`,
+			to: user.email
 		});
 
 		await auth.invalidateAllUserSessions(session.userId);

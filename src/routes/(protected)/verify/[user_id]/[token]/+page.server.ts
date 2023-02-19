@@ -3,10 +3,10 @@ import { fail, redirect } from '@sveltejs/kit';
 import { canVerifyEmail } from '$lib/server/emailVerification';
 import { auth } from '$lib/server/lucia';
 import { prisma } from '$lib/server/prisma';
-import { sendMailgunEmail } from '$lib/server/mailgunjs';
 
 import { PUBLIC_APP_NAME } from '$env/static/public';
-import { APP_URL } from '$env/static/private';
+
+import { sendEmail } from '$lib/server/emailjs';
 
 import type { PageServerLoad } from './$types';
 
@@ -41,15 +41,10 @@ export const load: PageServerLoad = async ({ params }) => {
 			});
 		}
 
-		await sendMailgunEmail({
+		await sendEmail({
 			subject: 'Email verified',
-			to: primaryKey.providerUserId,
-			template: 'email_verified',
-			variables: {
-				name: user.name,
-				application_name: PUBLIC_APP_NAME,
-				application_link: APP_URL
-			}
+			text: `Hi ${user.name},\n\nYour email has been verified\n\nThanks,\n\nThe ${PUBLIC_APP_NAME} team`,
+			to: user.email
 		});
 	} catch (err) {
 		return fail(500, { message: 'Internal server error' });

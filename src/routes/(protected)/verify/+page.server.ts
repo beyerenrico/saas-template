@@ -5,9 +5,9 @@ import { prisma } from '$lib/server/prisma';
 
 import { LuciaError } from 'lucia-auth';
 
-import { APP_URL } from '$env/static/private';
+import { sendEmail } from '$lib/server/emailjs';
 
-import { sendMailgunEmail } from '$lib/server/mailgunjs';
+import { PUBLIC_APP_NAME, PUBLIC_APP_URL } from '$env/static/public';
 
 import type { PageServerLoad } from './$types';
 
@@ -73,16 +73,12 @@ export const actions: Actions = {
 
 			// The page the user will be directed to from their email
 			// We send the resetToken, and the user_id along
-			const link = `${APP_URL}/verify/${user_id}/${verifyToken.token}`;
+			const link = `${PUBLIC_APP_URL}/verify/${user_id}/${verifyToken.token}`;
 
-			await sendMailgunEmail({
+			await sendEmail({
 				subject: 'Verify your email',
-				to: email,
-				template: 'email_verify',
-				variables: {
-					name: user.name,
-					verify_link: link
-				}
+				text: `Hi ${user.name},\n\nPlease verify your email by clicking the link below:\n\n${link}\n\nThanks,\n\nThe ${PUBLIC_APP_NAME} team`,
+				to: user.email
 			});
 
 			return {

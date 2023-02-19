@@ -5,9 +5,11 @@ import { prisma } from '$lib/server/prisma';
 
 import { LuciaError } from 'lucia-auth';
 
-import { APP_URL } from '$env/static/private';
+import { PUBLIC_APP_URL } from '$env/static/public';
 
-import { sendMailgunEmail } from '$lib/server/mailgunjs';
+import { sendEmail } from '$lib/server/emailjs';
+
+import { PUBLIC_APP_NAME } from '$env/static/public';
 
 import type { Actions } from './$types';
 
@@ -61,16 +63,12 @@ export const actions: Actions = {
 
 			// The page the user will be directed to from their email
 			// We send the resetToken, and the user_id along
-			const link = `${APP_URL}/reset-password/${user_id}/${resetToken.token}`;
+			const link = `${PUBLIC_APP_URL}/reset-password/${user_id}/${resetToken.token}`;
 
-			await sendMailgunEmail({
+			await sendEmail({
 				subject: 'Password Reset',
-				to: email,
-				template: 'password_recovery',
-				variables: {
-					name: user.name,
-					password_reset_link: link
-				}
+				text: `Hi ${user.name},\n\nPlease click the link below, to proceed with your password recovery:\n\n${link}\n\nThanks,\n\nThe ${PUBLIC_APP_NAME} team`,
+				to: user.email
 			});
 
 			return {
