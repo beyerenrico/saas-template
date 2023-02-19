@@ -27,7 +27,7 @@ export const createFactor = async (
 
 		if (!factor) {
 			const newFactor = twofactor.generateSecret({
-				name: 'Budgetly',
+				name: 'ACME Company',
 				account: user.email
 			});
 
@@ -69,11 +69,11 @@ export const updateFactor = async (
 
 		await auth.invalidateAllUserSessions(session.userId);
 		locals.setSession(null);
-
-		throw redirect(302, '/login');
 	} catch (err) {
 		return fail(500, { message: 'Internal server error' });
 	}
+
+	throw redirect(302, '/login');
 };
 
 export const deleteFactor = async (locals: App.Locals, session: Session) => {
@@ -86,9 +86,9 @@ export const deleteFactor = async (locals: App.Locals, session: Session) => {
 
 		await auth.invalidateAllUserSessions(session.userId);
 		locals.setSession(null);
-
-		throw redirect(302, '/login');
 	} catch (err) {
 		return fail(500, { message: 'Internal server error' });
 	}
+
+	throw redirect(302, '/login?factorDeleted=success');
 };
