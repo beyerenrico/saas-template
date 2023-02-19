@@ -2,9 +2,6 @@ import { fail } from '@sveltejs/kit';
 
 import { auth } from '$lib/server/lucia';
 import { prisma } from '$lib/server/prisma';
-
-import { dev } from '$app/environment';
-
 import { sendEmail } from '$lib/server/emailjs';
 
 import { LuciaError } from 'lucia-auth';
