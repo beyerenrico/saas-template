@@ -7,7 +7,7 @@
 {#if $notifications}
 	<div class="absolute right-3 top-0 z-[9001]">
 		{#each $notifications as { title, subtitle, caption, kind }}
-			<div transition:fly={{ x: 500 }} class="w-[24rem]">
+			<div transition:fly={{ x: 500 }} class="w-[16rem] md:w-[24rem]">
 				<ToastNotification {kind} {title} {subtitle} {caption} fullWidth />
 			</div>
 		{/each}

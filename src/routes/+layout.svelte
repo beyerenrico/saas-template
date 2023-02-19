@@ -28,4 +28,6 @@
 <Theme bind:theme={themeValue} persist persistKey="__carbon-theme" />
 <LocalStorage key="font-size" bind:value={globalFontSizeValue} />
 <NotificationOutput />
-<slot />
+<div class="overflow-x-hidden h-full">
+	<slot />
+</div>

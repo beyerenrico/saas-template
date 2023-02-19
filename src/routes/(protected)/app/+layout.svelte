@@ -56,7 +56,7 @@
 			<HeaderPanelLinks>
 				<HeaderPanelDivider>Account</HeaderPanelDivider>
 				{#each headerPanelItems as { href, text }}
-					<HeaderPanelLink {href}>{text}</HeaderPanelLink>
+					<HeaderPanelLink {href} on:click={() => (isOpen1 = false)}>{text}</HeaderPanelLink>
 				{/each}
 				<HeaderPanelDivider />
 				<form method="POST" action="/logout">
@@ -70,7 +70,13 @@
 <SideNav bind:isOpen={isSideNavOpen}>
 	<SideNavItems>
 		{#each navItems as { text, href, icon }}
-			<SideNavLink {icon} {text} {href} isSelected={$page.url.pathname === href} />
+			<SideNavLink
+				{icon}
+				{text}
+				{href}
+				isSelected={$page.url.pathname === href}
+				on:click={() => (isSideNavOpen = false)}
+			/>
 		{/each}
 	</SideNavItems>
 </SideNav>

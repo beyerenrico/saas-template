@@ -2,3 +2,18 @@
 /* @tailwind base;
 @tailwind components; */
 @tailwind utilities;
+
+@media screen and (max-width: 1055px) {
+	.bx--side-nav.bx--side-nav--expanded ~ .bx--content {
+		margin-left: 3rem;
+	}
+
+	.bx--content {
+		padding-inline: 0.5rem;
+	}
+}
+
+.bx--radio-button-group {
+	flex-wrap: wrap;
+	gap: 1rem;
+}
