@@ -18,7 +18,7 @@
 	} from 'carbon-components-svelte';
 	import { Home, UserAvatarFilledAlt } from 'carbon-icons-svelte';
 	import { page } from '$app/stores';
-	import { PUBLIC_APP_NAME } from '$env/static/public';
+	import { PUBLIC_APP_NAME, PUBLIC_APP_VERSION } from '$env/static/public';
 
 	let isSideNavOpen = false;
 	let isOpen1 = false;
@@ -47,7 +47,7 @@
 	];
 </script>
 
-<Header company={PUBLIC_APP_NAME} platformName="v0.0.1" bind:isSideNavOpen>
+<Header company={PUBLIC_APP_NAME} platformName="v{PUBLIC_APP_VERSION}" bind:isSideNavOpen>
 	<svelte:fragment slot="skip-to-content">
 		<SkipToContent />
 	</svelte:fragment>
