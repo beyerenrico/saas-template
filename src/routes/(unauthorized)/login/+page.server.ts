@@ -7,6 +7,7 @@ import { prisma } from '$lib/server/prisma';
 import twofactor from 'node-2fa';
 
 import { verifyForm } from '$lib/server/verifyForm';
+import { githubAuth } from '$lib/providers/github';
 
 import type { Actions } from './$types';
 
@@ -70,5 +71,19 @@ export const actions: Actions = {
 		}
 
 		throw redirect(302, '/app');
+	},
+	github: async ({ cookies }) => {
+		// get url to redirect the user to, with the state
+		const [authUrl, state] = githubAuth.getAuthorizationUrl();
+
+		// the state can be stored in cookies or localstorage for request validation on callback
+		cookies.set('state', state, {
+			path: '/',
+			httpOnly: true, // only readable in the server
+			maxAge: 60 * 60 // a reasonable expiration date
+		}); // example with cookie
+
+		// redirect to authorization url
+		throw redirect(302, authUrl);
 	}
 };

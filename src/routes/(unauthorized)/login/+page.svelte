@@ -15,6 +15,7 @@
 	import type { ActionData } from './$types';
 	import { page } from '$app/stores';
 	import { notifications } from '$lib/notification';
+	import { LogoGithub } from 'carbon-icons-svelte';
 
 	export let form: ActionData;
 
@@ -179,5 +180,29 @@
 				</form>
 			{/if}
 		</Column>
+	</Row>
+	<Row class="py-4 text-center">
+		<Column>
+			<div class="relative w-full">
+				<div class="absolute inset-0 flex items-center">
+					<div class="w-full h-[1px] bg-gray-400" />
+				</div>
+				<div class="relative flex justify-center text-sm">
+					<span
+						class="px-2 text-gray-500"
+						style="background-color: var(--cds-ui-background, #ffffff)">Or continue with</span
+					>
+				</div>
+			</div>
+		</Column>
+	</Row>
+	<Row class="py-4 text-center">
+		<form method="POST">
+			<Column>
+				<Button type="submit" icon={LogoGithub} kind="secondary" formaction="?/github"
+					>Github</Button
+				>
+			</Column>
+		</form>
 	</Row>
 </Grid>
