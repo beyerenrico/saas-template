@@ -44,7 +44,16 @@ declare global {
 			subtitle?: string;
 			caption?: string;
 			kind?: 'success' | 'error' | 'warning' | 'info';
+			timeout: number;
 		};
+
+		// Add your own template names here. These are used in the sendMailgunEmail function
+		type MailgunTemplates =
+			| 'email_changed'
+			| 'email_verified'
+			| 'email_verify'
+			| 'password_changed'
+			| 'password_recovery';
 	}
 
 	let __prisma: PrismaClient;

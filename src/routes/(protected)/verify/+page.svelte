@@ -20,7 +20,6 @@
 	};
 
 	$: ({ user } = data);
-	$: console.log(form);
 </script>
 
 <svelte:head>

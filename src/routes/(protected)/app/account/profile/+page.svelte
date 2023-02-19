@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
 	import { PUBLIC_APP_NAME } from '$env/static/public';
-	import { noClearEnhanceFunction } from '$lib/utils';
+	import { defaultEnhanceFunction, noClearEnhanceFunction } from '$lib/utils';
 	import {
 		Breadcrumb,
 		BreadcrumbItem,
@@ -29,7 +29,7 @@
 
 <h1>Profile</h1>
 
-<form method="POST" class="pt-8" use:enhance={noClearEnhanceFunction}>
+<form method="POST" class="pt-8" use:enhance={defaultEnhanceFunction}>
 	<FormGroup>
 		<TextInput
 			type="text"

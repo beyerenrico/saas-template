@@ -6,6 +6,7 @@ import { prisma } from '$lib/server/prisma';
 import { verifyForm } from '$lib/server/verifyForm';
 import { createFactor, deleteFactor, updateFactor } from '$lib/server/controllers/factor';
 import { updatePassword, validatePassword } from '$lib/server/controllers/password';
+import { sendMailgunEmail } from '$lib/server/mailgunjs';
 
 import type { PageServerLoad } from './$types';
 
@@ -46,6 +47,17 @@ export const actions: Actions = {
 
 		await validatePassword(user.email, oldPassword);
 		await updatePassword(user.email, password);
+
+		await sendMailgunEmail({
+			subject: 'Password changed',
+			to: user.email,
+			template: 'password_changed',
+			variables: {
+				name: user.name,
+				support_email: 'support@acmecompany.com'
+			}
+		});
+
 		await auth.invalidateAllUserSessions(session.userId);
 		locals.setSession(null);
 
@@ -79,8 +91,6 @@ export const actions: Actions = {
 		if (valid.status === 400) {
 			return fail(400, { message: valid.data.message });
 		}
-
-		console.log(valid);
 
 		return {
 			status: 200,

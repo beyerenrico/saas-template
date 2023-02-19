@@ -2,8 +2,11 @@ import { fail, redirect } from '@sveltejs/kit';
 
 import { canVerifyEmail } from '$lib/server/emailVerification';
 import { auth } from '$lib/server/lucia';
-import { sendEmail } from '$lib/server/emailjs';
 import { prisma } from '$lib/server/prisma';
+import { sendMailgunEmail } from '$lib/server/mailgunjs';
+
+import { PUBLIC_APP_NAME } from '$env/static/public';
+import { APP_URL } from '$env/static/private';
 
 import type { PageServerLoad } from './$types';
 
@@ -17,6 +20,7 @@ export const load: PageServerLoad = async ({ params }) => {
 	}
 
 	try {
+		const user = await auth.getUser(user_id);
 		const keys = await auth.getAllUserKeys(user_id);
 		const primaryKey = keys.find((key) => key.isPrimary);
 
@@ -37,16 +41,15 @@ export const load: PageServerLoad = async ({ params }) => {
 			});
 		}
 
-		await sendEmail({
-			subject: 'Your email has been verified',
-			text: 'Your email has been verified. If you did not request this, please contact us immediately.',
+		await sendMailgunEmail({
+			subject: 'Email verified',
 			to: primaryKey.providerUserId,
-			attachment: [
-				{
-					data: '<div>Your email has been verified. If you did not request this, please contact us immediately.</div>',
-					alternative: true
-				}
-			]
+			template: 'email_verified',
+			variables: {
+				name: user.name,
+				application_name: PUBLIC_APP_NAME,
+				application_link: APP_URL
+			}
 		});
 	} catch (err) {
 		return fail(500, { message: 'Internal server error' });

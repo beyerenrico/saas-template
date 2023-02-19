@@ -67,6 +67,8 @@ export const updateFactor = async (
 			return fail(400, { message: 'Invalid token' });
 		}
 
+		// TODO: Dispatch email to user
+
 		await auth.invalidateAllUserSessions(session.userId);
 		locals.setSession(null);
 	} catch (err) {
@@ -89,6 +91,8 @@ export const deleteFactor = async (locals: App.Locals, session: Session) => {
 	} catch (err) {
 		return fail(500, { message: 'Internal server error' });
 	}
+
+	// TODO: Dispatch email to user
 
 	throw redirect(302, '/login?factorDeleted=success');
 };

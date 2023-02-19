@@ -4,8 +4,8 @@ import { auth } from '$lib/server/lucia';
 import { canResetPassword } from '$lib/server/passwordReset';
 import { prisma } from '$lib/server/prisma';
 import { schemaForgotPassword } from '$lib/schema';
-import { sendEmail } from '$lib/server/emailjs';
 import { verifyForm } from '$lib/server/verifyForm';
+import { sendMailgunEmail } from '$lib/server/mailgunjs';
 
 import type { PageServerLoad } from './$types';
 
@@ -45,6 +45,8 @@ export const actions: Actions = {
 				});
 			}
 
+			const user = await auth.getUser(user_id);
+
 			const allowed = await canResetPassword({ params: { user_id, token } });
 
 			if (allowed.status === 400) return allowed;
@@ -67,16 +69,14 @@ export const actions: Actions = {
 				});
 			}
 
-			await sendEmail({
-				subject: 'Your password has been reset',
-				text: 'Your password has been reset. If you did not request this, please contact us immediately.',
+			await sendMailgunEmail({
+				subject: 'Password changed',
 				to: primaryKey.providerUserId,
-				attachment: [
-					{
-						data: '<div>Your password has been reset. If you did not request this, please contact us immediately.</div>',
-						alternative: true
-					}
-				]
+				template: 'password_changed',
+				variables: {
+					name: user.name,
+					support_email: 'support@acmecompany.com'
+				}
 			});
 
 			return {

@@ -2,11 +2,12 @@ import { fail, redirect, type Actions } from '@sveltejs/kit';
 
 import { auth } from '$lib/server/lucia';
 import { prisma } from '$lib/server/prisma';
-import { sendEmail } from '$lib/server/emailjs';
 
 import { LuciaError } from 'lucia-auth';
 
 import { APP_URL } from '$env/static/private';
+
+import { sendMailgunEmail } from '$lib/server/mailgunjs';
 
 import type { PageServerLoad } from './$types';
 
@@ -74,16 +75,14 @@ export const actions: Actions = {
 			// We send the resetToken, and the user_id along
 			const link = `${APP_URL}/verify/${user_id}/${verifyToken.token}`;
 
-			await sendEmail({
-				subject: 'Veriy your email',
-				text: `Verify your email by clicking this link: ${link}`,
+			await sendMailgunEmail({
+				subject: 'Verify your email',
 				to: email,
-				attachment: [
-					{
-						data: `<div>Click the link below to verify your email address: <br/><br/><a href="${link}">Verify email address</a></div>`,
-						alternative: true
-					}
-				]
+				template: 'email_verify',
+				variables: {
+					name: user.name,
+					verify_link: link
+				}
 			});
 
 			return {

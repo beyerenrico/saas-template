@@ -7,6 +7,7 @@ import { LuciaError } from 'lucia-auth';
 
 import { verifyForm } from '$lib/server/verifyForm';
 import { updateKeyIdentifier } from '$lib/server/controllers/key';
+import { sendMailgunEmail } from '$lib/server/mailgunjs';
 
 import type { PageServerLoad } from './$types';
 
@@ -39,6 +40,8 @@ export const actions: Actions = {
 			return valid as unknown as App.FormFail;
 		}
 
+		const user = await auth.getUser(session.userId);
+
 		try {
 			await auth.updateUserAttributes(session.userId, {
 				name,
@@ -60,7 +63,17 @@ export const actions: Actions = {
 		}
 
 		if (response?.status === 200) {
-			throw redirect(302, '/login');
+			await sendMailgunEmail({
+				subject: 'Email changed',
+				to: user.email,
+				template: 'email_changed',
+				variables: {
+					name: user.name,
+					support_email: 'support@acmecompany.com'
+				}
+			});
+
+			throw redirect(302, '/login?emailChanged=success');
 		}
 	}
 };
