@@ -1,6 +1,6 @@
 import type { SubmitFunction } from '$app/forms';
 
-import { toast } from './notification';
+import { notifications } from './notification';
 
 export const serializeNonPOJOs = (obj: Record<string, unknown>) => {
 	return structuredClone(obj);
@@ -10,24 +10,27 @@ export const defaultEnhanceFunction: SubmitFunction = () => {
 	return async ({ result, update }) => {
 		switch (result.type) {
 			case 'success':
-				toast({
+				notifications.enqueue({
 					kind: result.type,
 					title: 'Success',
-					caption: new Date().toLocaleString()
+					caption: new Date().toLocaleString(),
+					timeout: 5000
 				});
 				break;
 			case 'error':
-				toast({
+				notifications.enqueue({
 					kind: result.type,
 					title: 'An error has occured',
-					caption: new Date().toLocaleString()
+					caption: new Date().toLocaleString(),
+					timeout: 5000
 				});
 				break;
 			case 'failure':
-				toast({
+				notifications.enqueue({
 					kind: 'error',
 					title: 'Something went wrong',
-					caption: new Date().toLocaleString()
+					caption: new Date().toLocaleString(),
+					timeout: 5000
 				});
 				break;
 			default:
@@ -42,24 +45,27 @@ export const noClearEnhanceFunction: SubmitFunction = () => {
 	return async ({ result }) => {
 		switch (result.type) {
 			case 'success':
-				toast({
+				notifications.enqueue({
 					kind: result.type,
 					title: 'Success',
-					caption: new Date().toLocaleString()
+					caption: new Date().toLocaleString(),
+					timeout: 5000
 				});
 				break;
 			case 'error':
-				toast({
+				notifications.enqueue({
 					kind: result.type,
 					title: 'An error has occured',
-					caption: new Date().toLocaleString()
+					caption: new Date().toLocaleString(),
+					timeout: 5000
 				});
 				break;
 			case 'failure':
-				toast({
+				notifications.enqueue({
 					kind: 'error',
 					title: 'Something went wrong',
-					caption: new Date().toLocaleString()
+					caption: new Date().toLocaleString(),
+					timeout: 5000
 				});
 				break;
 			default:

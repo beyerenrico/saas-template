@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { enhance, type SubmitFunction } from '$app/forms';
-	import { toast } from '$lib/notification';
+	import { notifications } from '$lib/notification';
 	import {
 		Button,
 		CopyButton,
@@ -38,19 +38,21 @@
 		return async ({ result, update }) => {
 			switch (result.type) {
 				case 'redirect':
-					toast({
+					notifications.enqueue({
 						kind: 'success',
 						title: 'Two-factor authentication has been enabled',
 						subtitle: 'You have been logged out on all devices',
-						caption: new Date().toLocaleString()
+						caption: new Date().toLocaleString(),
+						timeout: 5000
 					});
 					break;
 				case 'failure':
-					toast({
+					notifications.enqueue({
 						kind: 'error',
 						title: 'Invalid token',
 						subtitle: 'Please try again',
-						caption: new Date().toLocaleString()
+						caption: new Date().toLocaleString(),
+						timeout: 5000
 					});
 					break;
 				default:
@@ -69,11 +71,12 @@
 			if (result.type === 'success') {
 				open = false;
 
-				toast({
+				notifications.enqueue({
 					kind: 'success',
 					title: 'Two-factor authentication has been disabled',
 					subtitle: 'You have been logged out on all devices',
-					caption: new Date().toLocaleString()
+					caption: new Date().toLocaleString(),
+					timeout: 5000
 				});
 			}
 
