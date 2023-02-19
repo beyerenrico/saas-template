@@ -7,6 +7,7 @@
 		BreadcrumbItem,
 		Button,
 		FormGroup,
+		Link,
 		PasswordInput
 	} from 'carbon-components-svelte';
 	import type { ActionData, PageData } from './$types';
@@ -49,6 +50,11 @@
 				? form?.errors?.filter((e) => e.field === 'oldPassword').length > 0
 				: false}
 		/>
+		<div class="pt-2">
+			<small>
+				Forgot password? <Link href="/reset-password">Reset password</Link>
+			</small>
+		</div>
 	</FormGroup>
 	<FormGroup>
 		<PasswordInput
