@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { enhance, type SubmitFunction } from '$app/forms';
 	import { PUBLIC_APP_NAME } from '$env/static/public';
-	import { toast } from '$lib/notification';
 	import {
 		TextInput,
 		PasswordInput,
@@ -12,12 +11,56 @@
 		FormGroup,
 		Link
 	} from 'carbon-components-svelte';
+	import { onMount } from 'svelte';
 	import type { ActionData } from './$types';
+	import { page } from '$app/stores';
+	import { notifications } from '$lib/notification';
 
 	export let form: ActionData;
 
 	let factor: App.Factor;
 	let loading = false;
+
+	onMount(() => {
+		if ($page.url.searchParams.get('logout') === 'success') {
+			notifications.enqueue({
+				kind: 'success',
+				title: 'Logout successful',
+				caption: new Date().toLocaleString(),
+				timeout: 5000
+			});
+		}
+
+		if ($page.url.searchParams.get('factorDeleted') === 'success') {
+			notifications.enqueue({
+				kind: 'warning',
+				title: 'Two-factor authentication has been disabled',
+				subtitle: 'You have been logged out on all devices',
+				caption: new Date().toLocaleString(),
+				timeout: 5000
+			});
+		}
+
+		if ($page.url.searchParams.get('passwordChanged') === 'success') {
+			notifications.enqueue({
+				kind: 'success',
+				title: 'Password has been changed',
+				subtitle: 'Please login with your new credentials',
+				caption: new Date().toLocaleString(),
+				timeout: 5000
+			});
+		}
+
+		if ($page.url.searchParams.get('emailChanged') === 'success') {
+			notifications.enqueue({
+				kind: 'success',
+				title: 'Your email has been changed',
+				subtitle: 'You have been logged out on all devices',
+				caption: new Date().toLocaleString(),
+				timeout: 5000
+			});
+		}
+	});
 
 	const submitLogin: SubmitFunction = () => {
 		loading = true;
@@ -29,30 +72,23 @@
 					update();
 					break;
 				case 'redirect':
-					toast({
+					notifications.enqueue({
 						kind: 'success',
 						title: 'Successful login',
-						caption: new Date().toLocaleString()
+						caption: new Date().toLocaleString(),
+						timeout: 5000
 					});
 					update();
 					break;
 				case 'failure':
-					toast({
+					notifications.enqueue({
 						kind: 'error',
 						title: 'Login failed',
-						caption: result.data?.message
+						caption: result.data?.message,
+						timeout: 5000
 					});
 					break;
 			}
-			loading = false;
-		};
-	};
-
-	const submitVerification: SubmitFunction = () => {
-		loading = true;
-
-		return async ({ result, update }) => {
-			console.log(result);
 			loading = false;
 		};
 	};
